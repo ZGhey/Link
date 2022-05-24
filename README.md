@@ -1,3 +1,3 @@
-# NEAR Place
+# Link
 
-Draw with pixels. Your pixels earn you more pixels, so better artists get more pixels to draw.
+Resolve all of the questions in Link
