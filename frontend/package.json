@@ -7,6 +7,7 @@
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
+    "antd": "^4.20.6",
     "bn.js": "^5.1.1",
     "near-api-js": "^0.27.0",
     "package.json": "^2.0.1",
@@ -14,6 +15,7 @@
     "react-bootstrap": "^1.0.0",
     "react-color": "^2.18.1",
     "react-dom": "^16.13.1",
+    "react-router-dom": "^6.3.0",
     "react-scripts": "3.4.0"
   },
   "scripts": {
