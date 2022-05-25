@@ -32,3 +32,6 @@
     font-weight: 400;
     cursor: pointer;
 }
+.submit.gray{
+    opacity: 0.5;
+}

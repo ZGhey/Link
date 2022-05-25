@@ -1,7 +1,21 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useCallback, useEffect, useState} from 'react';
+import {connect, WalletConnection} from 'near-api-js';
+import config from "../../config";
 import './list.css';
 export default function List() {
+    const [list, setList] = useState([]);
+    useEffect(()=>{
+        (async ()=>{
+            const near = await connect(config);
+            const wallet = new WalletConnection(near, 'demo');
+            const account = wallet.account()
+            const res = await account.viewFunction(config.CONTRACT, "get_question", {account_id: localStorage.getItem("accountId")})
+            console.log('list:',res);
+            setList(res);
+        })();
+    })
+
     return <div className={"wrap"}>
         <div className={"page-title"}>Question list</div>
         <div className={"question-list"}>

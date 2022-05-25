@@ -1,26 +1,47 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useCallback, useEffect, useState} from 'react';
-import {Modal, Form, Input, Button, Select, Space} from "antd";
+import {Form, Input} from "antd";
 import './question.css';
 import {connect, WalletConnection} from 'near-api-js';
 import config from "../../config";
+import {parseAmount} from "../../utils/util";
+import BN from 'bn.js'
 
 
 export default function Question(props) {
     const [form] = Form.useForm();
+    const [wallet, setWallet] = useState(null);
+    const [isLoading, setLoading] = useState(false);
 
     useEffect(()=>{
         (async ()=>{
             const near = await connect(config);
             const wallet = new WalletConnection(near, 'demo');
+            setWallet(wallet);
             if (!wallet.isSignedIn()) {
                 wallet.requestSignIn(config.CONTRACT)
             }
         })();
     })
 
-    const submit = () => {
-
+    const sub = async () => {
+        try{
+            const values = await form.validateFields();
+            //ipfs => question_hash
+            //values.question  parseAmount(values.rewards)
+            const deposit = new BN(parseAmount(values.rewards)).add(new BN('20000000000000000000000'))
+            const account = wallet.account()
+            await account.functionCall(
+                config.CONTRACT,
+                'set_question',
+                {question_hash:'hshhhshsh'},
+                '300000000000000',
+                deposit.toString(),
+            );
+        }catch (errorInfo) {
+            console.log('Failed:', errorInfo);
+        }
+        
     }
     return (
         <div className={"wrap"}>
@@ -54,7 +75,7 @@ export default function Question(props) {
                     <Input type="number" bordered={false} placeholder="Reward amount"/>
                 </Form.Item>
             </Form>
-            <div className={'submit'} onClick={submit}>submit</div>
+            <div className={['submit',isLoading ? 'gray' : ''].join(' ')} onClick={sub}>submit</div>
         </div>
     )
 }
