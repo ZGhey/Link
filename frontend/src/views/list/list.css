@@ -11,12 +11,17 @@
     line-height:22px;
     font-weight:bold;
 }
+.description{
+    margin-top:15px;
+    font-size:14px;
+    line-height:18px;
+}
 .info{
     height:20px;
     display:flex;
     align-items: center;
     position: relative;
-    margin-top:15px;
+    margin-top:20px;
 }
 .account,.rewards{
     color: rgba(255,255,255,0.5);

@@ -21,6 +21,7 @@ export default function List() {
         <div className={"question-list"}>
             <div className={"question-item"}>
                 <div className={"title"}>问题描述</div>
+                <div className={"description"}>description</div>
                 <div className={"info"}>
                     <div className={"account"}>creator: <span>XX.testnet</span></div>
                     <div className={"rewards"}>rewards: <span>0.5near</span></div>

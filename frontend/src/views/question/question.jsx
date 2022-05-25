@@ -27,7 +27,12 @@ export default function Question(props) {
     const sub = async () => {
         try{
             const values = await form.validateFields();
-            const cid = (await getCid(values.question)).path;
+            const args = {
+                question:values.question,
+                description:values.description,
+                rewards:values.rewards,
+            }
+            const cid = (await getCid(JSON.stringify(args))).path;
             const deposit = new BN(parseAmount(values.rewards)).add(new BN('20000000000000000000000'))
             const account = wallet.account()
             await account.functionCall(
