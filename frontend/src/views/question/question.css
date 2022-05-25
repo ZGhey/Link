@@ -1,0 +1,37 @@
+.ant-form-item{
+    margin-bottom:20px;
+}
+.ant-form-item-control-input textarea,.ant-form-item-control-input input{
+    width:100%;
+    background: transparent;
+    line-height:22px!important;
+    padding:14px 20px!important;
+    border: 1px solid rgba(255,255,255,0.16)!important;
+    border-radius: 8px;
+    font-family: Gilroy-Regular;
+    font-size: 14px;
+    color: #FFFFFF;
+    letter-spacing: 0;
+    font-weight: 400;
+    box-shadow: none;
+    outline: 0;
+}
+.submit{
+    margin-top:40px;
+    width:165px;
+    height:50px;
+    background: rgba(78,81,112,0.24);
+    border-radius: 8px;
+    display: flex;
+    justify-content:center;
+    align-items: center;
+    font-size: 16px;
+    color: #FFFFFF;
+    letter-spacing: 0;
+    text-align: center;
+    font-weight: 400;
+    cursor: pointer;
+}
+.submit.gray{
+    opacity: 0.5;
+}
