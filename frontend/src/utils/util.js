@@ -1,6 +1,7 @@
 import {connect, KeyPair, keyStores, utils, WalletConnection} from "near-api-js";
 import config from "../config";
-import bs58 from 'bs58'
+import bs58 from 'bs58';
+import { create } from 'ipfs-http-client';
 
 
 export const contract = async ()=>{
@@ -56,4 +57,14 @@ export async function sign(account, obj) {
     const { signature } = keyPair.sign(data_buffer);
     let sign = bs58.encode(signature);
     return sign
+}
+
+const client = create('https://ipfs.infura.io:5001/api/v0')
+export async function getCid(obj) {
+    return await client.add(obj)
+}
+
+export async function getContentByCid(cid){
+    const url = `https://ipfs.infura.io/ipfs/${cid}`
+    return await fetch(url).then(r => r.json())
 }

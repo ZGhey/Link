@@ -4,8 +4,8 @@ import {Form, Input} from "antd";
 import './question.css';
 import {connect, WalletConnection} from 'near-api-js';
 import config from "../../config";
-import {parseAmount} from "../../utils/util";
-import BN from 'bn.js'
+import {parseAmount, getCid} from "../../utils/util";
+import BN from 'bn.js';
 
 
 export default function Question(props) {
@@ -27,14 +27,13 @@ export default function Question(props) {
     const sub = async () => {
         try{
             const values = await form.validateFields();
-            //ipfs => question_hash
-            //values.question values.description parseAmount(values.rewards)
+            const cid = (await getCid(values.question)).path;
             const deposit = new BN(parseAmount(values.rewards)).add(new BN('20000000000000000000000'))
             const account = wallet.account()
             await account.functionCall(
                 config.CONTRACT,
                 'set_question',
-                {question_hash:'hshhhshsh'},
+                {question_hash:cid},
                 '300000000000000',
                 deposit.toString(),
             );
