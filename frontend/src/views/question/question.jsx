@@ -28,7 +28,7 @@ export default function Question(props) {
         try{
             const values = await form.validateFields();
             //ipfs => question_hash
-            //values.question  parseAmount(values.rewards)
+            //values.question values.description parseAmount(values.rewards)
             const deposit = new BN(parseAmount(values.rewards)).add(new BN('20000000000000000000000'))
             const account = wallet.account()
             await account.functionCall(
@@ -56,7 +56,14 @@ export default function Question(props) {
                     name="question"
                     rules={[{ required: true, message: 'Enter your question' }]}
                 >
-                    <Input.TextArea showCount={false} maxLength={500}  autoSize={{ minRows: 3}} bordered={false} placeholder="Provide a detailed description of your item."/>
+                    <Input.TextArea showCount={false} maxLength={500}  autoSize={{ minRows: 2}} bordered={false} placeholder="Enter your question."/>
+                </Form.Item>
+                <Form.Item
+                    label="Description"
+                    name="description"
+                    rules={[{ required: true, message: 'Enter your description' }]}
+                >
+                    <Input.TextArea showCount={false} maxLength={500}  autoSize={{ minRows: 4}} bordered={false} placeholder="Enter your description."/>
                 </Form.Item>
                 <Form.Item
                     label="Rewards(near)"
