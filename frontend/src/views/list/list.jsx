@@ -15,7 +15,7 @@ export default function List() {
             // console.log('list:',res);
             // setList(res);
             for (let i = 0; i < res.length; i++){
-                let context = getContentByCid(res[i])
+                let content = getContentByCid(res[i])
                 let question = (await context).data
                 console.log(question)
             }
