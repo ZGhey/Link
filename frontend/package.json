@@ -8,6 +8,7 @@
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
     "antd": "^4.20.6",
+    "axios": "^0.27.2",
     "bn.js": "^5.1.1",
     "ipfs-core": "^0.14.3",
     "ipfs-http-client": "^56.0.3",

@@ -3,6 +3,7 @@ import React, {useCallback, useEffect, useState} from 'react';
 import {connect, WalletConnection} from 'near-api-js';
 import config from "../../config";
 import './list.css';
+import { getContentByCid } from '../../utils/util';
 export default function List() {
     const [list, setList] = useState([]);
     useEffect(()=>{
@@ -11,8 +12,13 @@ export default function List() {
             const wallet = new WalletConnection(near, 'demo');
             const account = wallet.account()
             const res = await account.viewFunction(config.CONTRACT, "get_question", {account_id: localStorage.getItem("accountId")})
-            console.log('list:',res);
-            setList(res);
+            // console.log('list:',res);
+            // setList(res);
+            for (let i = 0; i < res.length; i++){
+                let context = getContentByCid(res[i])
+                let question = (await context).data
+                console.log(question)
+            }
         })();
     })
 

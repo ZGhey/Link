@@ -2,6 +2,7 @@ import {connect, KeyPair, keyStores, utils, WalletConnection} from "near-api-js"
 import config from "../config";
 import bs58 from 'bs58';
 import { create } from 'ipfs-http-client';
+import axios from 'axios';
 
 
 export const contract = async ()=>{
@@ -66,5 +67,5 @@ export async function getCid(obj) {
 
 export async function getContentByCid(cid){
     const url = `https://ipfs.infura.io/ipfs/${cid}`
-    return await fetch(url).then(r => r.json())
+    return await axios.get(url)
 }

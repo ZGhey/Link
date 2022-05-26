@@ -7,7 +7,7 @@
  env.attetched_deposit env自带
  question_hash String类型 这个是存储完IPFS以后返回的CID
 ````
-## get_question(&self, account_id: AccountId) !需要调试返回数据
+## get_question(&self, account_id: AccountId)
 #### 获取某一个用户所有提交的问题hash
 ```
  account_id string 
@@ -21,7 +21,7 @@
  answer_hash String, 这个是存储完IPFS以后返回的CID
 ```
 
-## get_answer(&self, question_hash: String) !需要调试返回数据
+## get_answer(&self, question_hash: String)
 #### 获取某一个问题的所有答案
 ```
  question_hash string 

@@ -11,7 +11,7 @@ static ALLOC: near_sdk::wee_alloc::WeeAlloc<'_> = near_sdk::wee_alloc::WeeAlloc:
 pub struct Link {
     pub issuser: UnorderedMap<AccountId, Vec<String>>,
     pub replier: UnorderedMap<AccountId, Vec<String>>,
-    pub qa: UnorderedMap<AccountId, Vec<String>>,
+    pub qa: UnorderedMap<String, Vec<String>>,
 
 }
 
@@ -41,12 +41,12 @@ impl Link {
       return Promise::new(env::current_account_id()).transfer(env::attached_deposit());
     }
 
-    pub fn get_question(&self, account_id: AccountId){
-      let questions = self.issuser.get(&account_id).unwrap();
-      for question in questions {
-        let log_message = format!("account_id: {}, quesion: {}", &account_id, &question);
-        env::log(log_message.as_bytes());
+    pub fn get_question(&self, account_id: AccountId) -> Vec<String>{
+      let value = self.issuser.get(&account_id);
+      if value == None{
+        return Vec::new();
       }
+      return self.issuser.get(&account_id).unwrap();
     }
 
     pub fn set_answer(&mut self, question_hash: String, answer_hash: String){
@@ -70,15 +70,19 @@ impl Link {
       }
     }
 
-    pub fn get_answer(&self, question_hash: String){
-      let answers = self.qa.get(&question_hash).unwrap();
-      for answer in answers {
-        let log_message = format!("question_hash: {}, answer: {}", &question_hash, &answer);
-        env::log(log_message.as_bytes());
+    pub fn get_answer(&self, question_hash: String) -> Vec<String>{
+      let value = self.qa.get(&question_hash);
+      if value == None{
+        return Vec::new();
       }
+      return self.qa.get(&question_hash).unwrap();
     }
 
     pub fn send_bonus(&self, account_id: AccountId, bonus: Balance) -> Promise{
       return Promise::new(account_id).transfer(bonus);
+    }
+
+    pub fn clear_question(&mut self){
+      self.issuser.remove(&env::signer_account_id());
     }
 }
