@@ -3,13 +3,16 @@ use near_sdk::collections::{UnorderedMap, Vector};
 use near_sdk::json_types::{Base58PublicKey, U128};
 use near_sdk::{env, near_bindgen, AccountId, Balance, PanicOnDefault, Promise};
 
+pub mod question;
+pub use crate::question::*;
+
 #[global_allocator]
 static ALLOC: near_sdk::wee_alloc::WeeAlloc<'_> = near_sdk::wee_alloc::WeeAlloc::INIT;
 
 #[near_bindgen]
 #[derive(BorshDeserialize, BorshSerialize, PanicOnDefault)]
 pub struct Link {
-    pub issuser: UnorderedMap<AccountId, Vec<String>>,
+    pub issuser: UnorderedMap<AccountId, Vec<Question>>,
     pub replier: UnorderedMap<AccountId, Vec<String>>,
     pub qa: UnorderedMap<String, Vec<String>>,
 
@@ -30,12 +33,16 @@ impl Link {
 
     #[payable]
     pub fn set_question(&mut self, question_hash: String) -> Promise{
-      if self.issuser.get(&env::signer_account_id()) == None {
-        let v = vec![question_hash];
+      let mut question = Question::new();
+      question.question_hash = question_hash;
+      question.is_answered = false;
+      if self.issuser.get(&env::signer_account_id()).is_none(){
+        
+        let v = vec![question];
         self.issuser.insert(&env::signer_account_id(), &v);
       }else {
         let mut questions = self.issuser.get(&env::signer_account_id()).unwrap();
-        questions.push(question_hash);
+        questions.push(question);
         self.issuser.insert(&env::signer_account_id(), &questions);
       }
       return Promise::new(env::current_account_id()).transfer(env::attached_deposit());
@@ -43,10 +50,16 @@ impl Link {
 
     pub fn get_question(&self, account_id: AccountId) -> Vec<String>{
       let value = self.issuser.get(&account_id);
-      if value == None{
-        return Vec::new();
+      let mut question_hash = Vec::new();
+      if value.is_none(){
+        return question_hash;
       }
-      return self.issuser.get(&account_id).unwrap();
+      let questions = self.issuser.get(&account_id).unwrap();
+      for question in questions.iter(){
+        question_hash.push(question.question_hash)
+      }
+
+      return question_hash;
     }
 
     pub fn set_answer(&mut self, question_hash: String, answer_hash: String){
@@ -55,7 +68,7 @@ impl Link {
         let answer_hash_list = vec![answer_hash];
         self.replier.insert(&env::signer_account_id(), &answer_hash_list);
       }else {
-        let mut answers = self.issuser.get(&env::signer_account_id()).unwrap();
+        let mut answers = self.replier.get(&env::signer_account_id()).unwrap();
         answers.push(answer_hash);
         self.replier.insert(&env::signer_account_id(), &answers);
       }
