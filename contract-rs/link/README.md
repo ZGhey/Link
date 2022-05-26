@@ -1,4 +1,4 @@
-# NEAR Place
+# NEAR Link
 
 Smart contract to keep track of the board.
 
@@ -13,5 +13,5 @@ Smart contract to keep track of the board.
 To test run:
 
 ```bash
-cargo test --package near-place -- --nocapture
+cargo test --package near-Link -- --nocapture
 ```
