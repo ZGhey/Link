@@ -55,8 +55,8 @@ impl Link {
         return question_hash;
       }
       let questions = self.issuser.get(&account_id).unwrap();
-      for question in questions.iter(){
-        question_hash.push(question.question_hash)
+      for question in &questions{
+        question_hash.push(question.question_hash.clone())
       }
 
       return question_hash;
@@ -91,8 +91,22 @@ impl Link {
       return self.qa.get(&question_hash).unwrap();
     }
 
-    pub fn send_bonus(&self, account_id: AccountId, bonus: Balance) -> Promise{
-      return Promise::new(account_id).transfer(bonus);
+    pub fn send_bonus(&mut self,question_hash: String, account_id: AccountId, bonus: Balance){
+      let questions = self.issuser.get(&env::signer_account_id()).unwrap();
+      let mut questions_vec: Vec::<Question> = Vec::new();
+      for question in questions{
+        if question.question_hash.clone() == question_hash{
+          let mut question_obj = Question::new();
+          question_obj.question_hash = question.question_hash;
+          question_obj.is_answered = true;
+          questions_vec.push(question_obj);
+          Promise::new(account_id.clone()).transfer(bonus);
+        }
+        questions_vec.push(question);
+      }
+      self.issuser.remove(&env::signer_account_id());
+      self.issuser.insert(&env::signer_account_id(), &questions_vec);
+      //return Promise::new(account_id).transfer(bonus);
     }
 
     pub fn clear_question(&mut self){

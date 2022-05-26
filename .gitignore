@@ -10,5 +10,3 @@ neardev
 #node_modules
 node_modules
 
-./contract-rs/link/src/lib2.rs
-./contract-rs/link/src/question.rs
