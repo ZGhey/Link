@@ -42,9 +42,16 @@ impl Link {
     }
 
     pub fn get_question(&self, account_id: AccountId) -> Vec<String>{
-      let value = self.issuser.get(&account_id);
-      if value == None{
-        return Vec::new();
+      let mut value: Vec::<String> = Vec::new();
+      if account_id.is_empty(){
+        for vec_questions in self.issuser.values(){
+          for question in vec_questions{
+            value.push(question);
+          }
+        }
+        return value;
+      }else if self.issuser.get(&account_id) == None{
+        return value;
       }
       return self.issuser.get(&account_id).unwrap();
     }
@@ -71,14 +78,16 @@ impl Link {
     }
 
     pub fn get_answer(&self, question_hash: String) -> Vec<String>{
-      let value = self.qa.get(&question_hash);
-      if value == None{
-        return Vec::new();
+      let value: Vec::<String> = Vec::new();
+      if question_hash.is_empty(){
+        return value;
+      }else if self.qa.get(&question_hash) == None{
+        return value;
       }
       return self.qa.get(&question_hash).unwrap();
     }
 
-    pub fn send_bonus(&self, account_id: AccountId, bonus: Balance) -> Promise{
+    pub fn send_bonus(&self, account_id: AccountId, bonus: u128) -> Promise{
       return Promise::new(account_id).transfer(bonus);
     }
 
@@ -86,3 +95,59 @@ impl Link {
       self.issuser.remove(&env::signer_account_id());
     }
 }
+
+#[cfg(not(target_arch = "wasm32"))]
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use near_sdk::MockedBlockchain;
+    use near_sdk::{testing_env, VMContext};
+
+    fn get_context(input: Vec<u8>, is_view: bool) -> VMContext {
+        VMContext {
+            current_account_id: "dev-1653625243868-83124057301145".to_string(),
+            signer_account_id: "0xjacktest1.testnet".to_string(),
+            signer_account_pk: vec![0, 1, 2],
+            predecessor_account_id: "0xjacktest1.testnet".to_string(),
+            input,
+            block_index: 0,
+            block_timestamp: 0,
+            account_balance: 1,
+            account_locked_balance: 0,
+            storage_usage: 0,
+            attached_deposit: 0,
+            prepaid_gas: 10u64.pow(18),
+            random_seed: vec![0, 1, 2],
+            is_view,
+            output_data_receivers: vec![],
+            epoch_height: 0,
+        }
+    }
+
+    #[test]
+    fn set_get_question() {
+        let context = get_context(vec![], false);
+        testing_env!(context);
+        let mut contract = Link::new();
+        contract.set_question("hello".to_string());
+        assert_eq!(
+            "hello".to_string(),
+            contract.get_question("0xjacktest1.testnet".to_string())[0]
+        );
+        
+    }
+
+    #[test]
+    fn set_get_answer() {
+        let context = get_context(vec![], false);
+        testing_env!(context);
+        let mut contract = Link::new();
+        contract.set_answer("question".to_string(),"answer".to_string());
+        assert_eq!(
+            "answer".to_string(),
+            contract.get_answer("question".to_string())[0]
+        );
+        
+    }
+
+  }
