@@ -7,6 +7,6 @@ const config = {
   nodeUrl: 'https://rpc.testnet.near.org',
   walletUrl: 'https://wallet.testnet.near.org',
   helperUrl: 'https://helper.testnet.near.org',
-  CONTRACT: 'dev-1653406821132-91431409179529',
+  CONTRACT: 'dev-1653625243868-83124057301145',
 }
 export default config;

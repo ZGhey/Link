@@ -4,9 +4,12 @@ import {connect, WalletConnection} from 'near-api-js';
 import './header.css';
 import config from "../../config";
 
+
 export default function Header() {
+    
     const [isSign, setIsSign] = useState(false);
     const [accountId, setAccountId] = useState("");
+    
 
     useEffect(()=>{
         setIsSign(localStorage.getItem("isSign"))
@@ -36,6 +39,7 @@ export default function Header() {
     } else {
         return <div className={"header"}>
             <div onClick={signIn}>login</div>
+            <div onClick={signIn}>ask</div>
         </div>
     }
 }

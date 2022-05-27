@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useCallback, useEffect, useState} from 'react';
+import { useNavigate } from 'react-router-dom';
 import {Form, Input} from "antd";
 import './question.css';
 import {connect, WalletConnection} from 'near-api-js';
@@ -9,6 +10,7 @@ import BN from 'bn.js';
 
 
 export default function Question(props) {
+    const navigate = useNavigate();
     const [form] = Form.useForm();
     const [wallet, setWallet] = useState(null);
     const [isLoading, setLoading] = useState(false);
@@ -31,6 +33,7 @@ export default function Question(props) {
                 question:values.question,
                 description:values.description,
                 rewards:values.rewards,
+                creator:localStorage.getItem("accountId")
             }
             const cid = (await getCid(JSON.stringify(args))).path;
             const deposit = new BN(parseAmount(values.rewards)).add(new BN('20000000000000000000000'))
@@ -42,13 +45,21 @@ export default function Question(props) {
                 '300000000000000',
                 deposit.toString(),
             );
+            
         }catch (errorInfo) {
             console.log('Failed:', errorInfo);
         }
         
     }
+
+    const toList = () => {
+        navigate('/list');
+    }
+
+
     return (
         <div className={"wrap"}>
+            <div className={"fixed-btn"} onClick={toList}>list</div>
             <div className={"page-title"}>Create a question</div>
             <Form
                 form={form}

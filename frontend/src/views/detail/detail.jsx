@@ -1,26 +1,30 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useCallback, useEffect, useState} from 'react';
 import {Form, Input} from "antd";
+import { useNavigate } from 'react-router-dom';
 import './detail.css';
 import {connect, WalletConnection} from 'near-api-js';
 import config from "../../config";
 import {parseAmount, getCid} from "../../utils/util";
 import { useParams, useHistory } from 'react-router-dom';
+import { getContentByCid } from '../../utils/util';
 
 
 export default function Detail(props) {
+    const navigate = useNavigate();
+    const params = useParams()
     const [form] = Form.useForm();
     const [isLoading, setLoading] = useState(false);
-    const params = useParams()
-
-    const [detail, setDetail] = useState(null);
+    const [detail, setDetail] = useState({});
     const [answerList, setAnswerList] = useState([]);
     useEffect(()=>{
         (async ()=>{
-            //getDetail()
+            // getDetail()
+            const res  = await getContentByCid(params.id);
+            setDetail(res.data);
             await getList();
         })();
-    })
+    },[])
 
     const sendBonus = async() => {
         const near = await connect(config);
@@ -33,9 +37,17 @@ export default function Detail(props) {
         const near = await connect(config);
         const wallet = new WalletConnection(near, 'demo');
         const account = wallet.account()
-        const res = await account.viewFunction(config.CONTRACT, "get_answer", {question_hash: "QmS6BdhgKcQtWTgMFJvCd7RpW8yaJNFZcyX5RExXQ9AHjW"}) //params.id
-        console.log('answerList:',res);
-        setAnswerList(res);
+        const res = await account.viewFunction(config.CONTRACT, "get_answer", {question_hash: params.id}) //params.id
+        console.log('res:',res,params.id);
+
+        const list = [];
+        for (let i = 0; i < res.length; i++){
+            let content = getContentByCid(res[i])
+            let answer = (await content).data
+            list.push(answer);
+        }
+        setAnswerList(list);
+        console.log('answerList:',list);
     };
 
 
@@ -72,14 +84,46 @@ export default function Detail(props) {
         }
     }
 
+    const jump = (path) => {
+        navigate(path);
+    }
+    
+    function SetList(){
+        if(answerList.length>0){
+            const setItems = answerList.map((item,index) => 
+                <div className={"answer-item"} key={Math.random()}>
+                     <div className={"top"}>
+                        <div className={"user"}>XXX.near</div>
+                        <div className={"date"}>2022/05/23</div>
+                    </div>
+                    <div className={"text"}>{item.answer}</div>
+                        
+                    <div className={"bottom"}>
+                        <div className={"reward-btn"} onClick={sendBonus}>reward</div>
+                    </div>
+                </div>
+            );
+            
+            return (<div className={'question-list'}>
+                {setItems}
+            </div>)
+        }
+        else{
+            return (<div className={'no-data'}>
+                <div className={'tip'}>No data</div>
+            </div>)
+        }
+    }
 
     return <div className={"wrap detail"}>
+        <div className={"fixed-btn fixed-btn1"} onClick={() => jump('/question')}>ask</div>
+        <div className={"fixed-btn "} onClick={() => jump('/list')}>list</div>
         <div className={"question-item"}>
-            <div className={"title"}>问题描述</div>
-            <div className={"description"}>description</div>
+            <div className={"title"}>{detail.question}</div>
+            <div className={"description"}>{detail.description}</div>
             <div className={"info"}>
                 <div className={"account"}>creator: <span>XX.testnet</span></div>
-                <div className={"rewards"}>rewards: <span>0.5near</span></div>
+                <div className={"rewards"}>rewards: <span>{detail.rewards}near</span></div>
             </div>
         </div>
         <div className={"form-box"}>
@@ -99,39 +143,7 @@ export default function Detail(props) {
         </div>
 
         <div className={"answer-list"}>
-            <div className={"answer-item"}>
-                <div className={"top"}>
-                    <div className={"user"}>XXX.near</div>
-                    <div className={"date"}>2022/05/23</div>
-                </div>
-                <div className={"text"}>this is answer. this is answer. this is answer. this is answer. this is answer. this is answer. this is answer. this is answer. this is answer. this is answer. this is answer. this is answer. this is answer. this is answer. this is answer. this is answer. this is answer. this is answer. this is answer. this is answer. this is answer. this is answer. this is answer. this is answer. </div>
-                    
-                <div className={"bottom"}>
-                    <div className={"reward-btn"} onClick={sendBonus}>reward</div>
-                </div>
-            </div>
-            <div className={"answer-item"}>
-                <div className={"top"}>
-                    <div className={"user"}>XXX.near</div>
-                    <div className={"date"}>2022/05/23</div>
-                </div>
-                <div className={"text"}>this is answer. this is answer. this is answer. this is answer. this is answer. this is answer. this is answer. this is answer. this is answer. this is answer. this is answer. this is answer. this is answer. this is answer. this is answer. this is answer. this is answer. this is answer. this is answer. this is answer. this is answer. this is answer. this is answer. this is answer. </div>
-                    
-                <div className={"bottom"}>
-                    <div className={"reward-btn"} onClick={sendBonus}>reward</div>
-                </div>
-            </div>
-            <div className={"answer-item"}>
-                <div className={"top"}>
-                    <div className={"user"}>XXX.near</div>
-                    <div className={"date"}>2022/05/23</div>
-                </div>
-                <div className={"text"}>this is answer. this is answer. this is answer. this is answer. this is answer. this is answer. this is answer. this is answer. this is answer. this is answer. this is answer. this is answer. this is answer. this is answer. this is answer. this is answer. this is answer. this is answer. this is answer. this is answer. this is answer. this is answer. this is answer. this is answer. </div>
-                    
-                <div className={"bottom"}>
-                    <div className={"reward-btn"} onClick={sendBonus}>reward</div>
-                </div>
-            </div>
+            <SetList/>
         </div>
     </div>
 }
