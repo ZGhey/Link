@@ -16,7 +16,7 @@ export default function List() {
             const res = await account.viewFunction(config.CONTRACT, "get_question", {account_id: ""})
             console.log(res);
             const list = [];
-            for (let i = 1; i < res.length; i++){
+            for (let i = 0; i < res.length; i++){
                 let content = getContentByCid(res[i])
                 let question = (await content).data
                 console.log(question,'-------')
@@ -43,7 +43,7 @@ export default function List() {
                     <div className={"title"}>{item.question}</div>
                     <div className={"description"}>{item.description}</div>
                     <div className={"info"}>
-                        <div className={"account"}>creator: <span>XX.testnet</span></div>
+                        <div className={"account"}>creator: <span>{item.creator}</span></div>
                         <div className={"rewards"}>rewards: <span>{item.rewards}near</span></div>
                     </div>
                 </div>

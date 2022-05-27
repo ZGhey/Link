@@ -39,7 +39,6 @@ export default function Header() {
     } else {
         return <div className={"header"}>
             <div onClick={signIn}>login</div>
-            <div onClick={signIn}>ask</div>
         </div>
     }
 }

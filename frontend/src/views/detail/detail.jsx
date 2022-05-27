@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import './detail.css';
 import {connect, WalletConnection} from 'near-api-js';
 import config from "../../config";
-import {parseAmount, getCid} from "../../utils/util";
+import {parseAmount, getCid, formatAmount} from "../../utils/util";
 import { useParams, useHistory } from 'react-router-dom';
 import { getContentByCid } from '../../utils/util';
 
@@ -26,11 +26,22 @@ export default function Detail(props) {
         })();
     },[])
 
-    const sendBonus = async() => {
+    const sendBonus = async (account_id) => {
         const near = await connect(config);
         const wallet = new WalletConnection(near, 'demo');
         const account = wallet.account()
-        const res = await account.viewFunction(config.CONTRACT, "send_bonus", {question_hash: params.id,account_id:''})
+        const res = await account.functionCall(
+            config.CONTRACT,
+            'send_bonus',
+            {bonus: Number(detail.rewards),account_id:account_id},
+            '300000000000000',
+            ''
+        );
+        if(res.transaction){
+            form.resetFields();
+            getList();
+        }
+        // const res = await account.viewFunction(config.CONTRACT, "send_bonus", {bonus: parseAmount(detail.rewards),account_id:account_id})
     };
 
     const getList = async (item) => {
@@ -62,6 +73,7 @@ export default function Detail(props) {
             const values = await form.validateFields();
             const args = {
                 answer:values.answer,
+                creator:localStorage.getItem("accountId")
             }
             
             const cid = (await getCid(JSON.stringify(args))).path;
@@ -71,9 +83,9 @@ export default function Detail(props) {
             const res = await account.functionCall(
                 config.CONTRACT,
                 'set_answer',
-                {answer_hash:cid,question_hash:"QmS6BdhgKcQtWTgMFJvCd7RpW8yaJNFZcyX5RExXQ9AHjW"}, //params.id
+                {answer_hash:cid,question_hash:params.id}, //params.id
                 '300000000000000',
-                '0',
+                '0'
             );
             if(res.transaction){
                 form.resetFields();
@@ -87,20 +99,28 @@ export default function Detail(props) {
     const jump = (path) => {
         navigate(path);
     }
+
+    function Button(props){
+        if(detail.creator == localStorage.getItem("accountId")){
+            return <div className={"bottom"}>
+                <div className={"reward-btn"} onClick={() => sendBonus(props.item.creator)}>reward</div>
+            </div>
+        }else{
+            return ""
+        }
+    }
     
     function SetList(){
         if(answerList.length>0){
             const setItems = answerList.map((item,index) => 
                 <div className={"answer-item"} key={Math.random()}>
                      <div className={"top"}>
-                        <div className={"user"}>XXX.near</div>
-                        <div className={"date"}>2022/05/23</div>
+                        <div className={"user"}>{item.creator}</div>
+                        {/* <div className={"date"}>2022/05/23</div> */}
                     </div>
                     <div className={"text"}>{item.answer}</div>
                         
-                    <div className={"bottom"}>
-                        <div className={"reward-btn"} onClick={sendBonus}>reward</div>
-                    </div>
+                    <Button item={item} />
                 </div>
             );
             
@@ -122,7 +142,7 @@ export default function Detail(props) {
             <div className={"title"}>{detail.question}</div>
             <div className={"description"}>{detail.description}</div>
             <div className={"info"}>
-                <div className={"account"}>creator: <span>XX.testnet</span></div>
+                <div className={"account"}>creator: <span>{detail.creator}</span></div>
                 <div className={"rewards"}>rewards: <span>{detail.rewards}near</span></div>
             </div>
         </div>
