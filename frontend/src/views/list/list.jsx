@@ -13,10 +13,10 @@ export default function List() {
             const near = await connect(config);
             const wallet = new WalletConnection(near, 'demo');
             const account = wallet.account()
-            const res = await account.viewFunction(config.CONTRACT, "get_question", {account_id: localStorage.getItem("accountId")})
-            
+            const res = await account.viewFunction(config.CONTRACT, "get_question", {account_id: ""})
+            console.log(res);
             const list = [];
-            for (let i = 0; i < res.length; i++){
+            for (let i = 1; i < res.length; i++){
                 let content = getContentByCid(res[i])
                 let question = (await content).data
                 console.log(question,'-------')
